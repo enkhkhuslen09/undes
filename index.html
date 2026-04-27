@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="eng">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хайч Чулуу Даавуу</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #121212;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header { 
+            padding: 3rem 0; 
+            text-align: center; 
+        }
+        h1 { 
+            font-size: 3rem; 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #00ffcc, #3399ff);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .game-container {
+            background: #1e1e1e;
+            padding: 50px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .battle-arena {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin: 40px 0;
+        }
+        .player-card {
+            flex: 1;
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
+        }
+        .selected { border: 1px solid #00ffcc; background: rgba(0, 255, 204, 0.05); }
+        .choice-icon { font-size: 5.5rem; margin: 20px 0; min-height: 120px; }
+        .key-hint { color: #00ffcc; font-weight: bold; font-size: 1.1rem; }
+        .status { font-size: 0.9rem; color: #888; margin-top: 10px; }
+        .result-area { 
+            font-size: 2.2rem; 
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+        button {
+            background: transparent;
+            color: #00ffcc;
+            padding: 14px 35px;
+            border: 2px solid #00ffcc;
+            border-radius: 12px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { 
+            background: #00ffcc;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0,255,204,0.4);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Хайч Чулуу Даавуу</h1>
+    </header>
+
+    <div class="game-container">
+        <div class="battle-arena">
+            <div id="p1Card" class="player-card">
+                <h3>Тоглогч 1</h3>
+                <div id="p1Choice" class="choice-icon">❓</div>
+                <p class="key-hint">Q, W, E</p>
+                <p id="p1Status" class="status">Сонгоогүй</p>
+            </div>
+
+            <div style="font-size: 2rem; color: #555; padding: 0 20px;">VS</div>
+
+            <div id="p2Card" class="player-card">
+                <h3>Тоглогч 2</h3>
+                <div id="p2Choice" class="choice-icon">❓</div>
+                <p class="key-hint">I, O, P</p>
+                <p id="p2Status" class="status">Сонгоогүй</p>
+            </div>
+        </div>
+
+        <div id="rpsResult" class="result-area"></div>
+        
+        <button onclick="resetRPS()">Шинээр эхлэх</button>
+    </div>
+
+    <script>
+        let p1 = "", p2 = "";
+        const names  = { 'Q':'Хайч', 'W':'Чулуу', 'E':'Даавуу', 'I':'Хайч', 'O':'Чулуу', 'P':'Даавуу' };
+        const emojis = { 'Q':'✂️', 'W':'🪨', 'E':'📜', 'I':'✂️', 'O':'🪨', 'P':'📜' };
+
+        document.addEventListener('keydown', e => {
+            const k = e.key.toUpperCase();
+            
+            if (p1 && p2) return;
+            //player 1
+            if (['Q','W','E'].includes(k)) { 
+                p1 = k; 
+                document.getElementById('p1Status').textContent = "✅ СОНГСОН";
+                document.getElementById('p1Card').classList.add('selected');
+            }
+            //player 2
+            if (['I','O','P'].includes(k)) { 
+                p2 = k; 
+                document.getElementById('p2Status').textContent = "✅ СОНГСОН";
+                document.getElementById('p2Card').classList.add('selected');
+            }
+            
+            // 2 uul songoson ved ur dung gargah
+            if (p1 && p2) {
+                revealResult();
+            }
+        });
+
+        function revealResult() {
+            // songoltoo il gargah
+            document.getElementById('p1Choice').textContent = emojis[p1];
+            document.getElementById('p2Choice').textContent = emojis[p2];
+
+            const resultDiv = document.getElementById('rpsResult');
+            const name1 = names[p1];
+            const name2 = names[p2];
+
+            if (name1 === name2) {
+                resultDiv.innerHTML = `<span style="color:#ffd700;">ТЭНЦЛЭЭ!...(*￣０￣)ノ</span>`;
+            } else if (
+                (name1 === 'Хайч' && name2 === 'Даавуу') || 
+                (name1 === 'Даавуу' && name2 === 'Чулуу') || 
+                (name1 === 'Чулуу' && name2 === 'Хайч')
+            ) {
+                resultDiv.innerHTML = `<span style="color:#00ff88;">ТОГЛОГЧ 1 ЯЛЛАА! '(～￣▽￣)～' </span>`;
+            } else {
+                resultDiv.innerHTML = `<span style="color:#00ff88;">ТОГЛОГЧ 2 ЯЛЛАА! '(～￣▽￣)～' </span>`;
+            }
+        }
+
+        function resetRPS() {
+            p1 = ""; p2 = "";
+            document.getElementById('p1Choice').textContent = "❓";
+            document.getElementById('p2Choice').textContent = "❓";
+            document.getElementById('p1Status').textContent = "Сонгоогүй";
+            document.getElementById('p2Status').textContent = "Сонгоогүй";
+            document.getElementById('p1Card').classList.remove('selected');
+            document.getElementById('p2Card').classList.remove('selected');
+            document.getElementById('rpsResult').innerHTML = "";
+        }
+    </script>
+</body>
+</html>
